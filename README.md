@@ -1,20 +1,16 @@
 # Py-Trading-Bot
 
-## Overview
-Algorithmic trading simulator.
+Algorithmic trading signal engine with SMA crossover and RSI indicators.
 
-Developed as part of my portfolio showcasing 5 years of software engineering experience. This project demonstrates clean architecture, proper error handling, and production-ready Python patterns.
-
-## Quick Start (1-Click Build)
+## Quick Start
 
 ```bash
-git clone https://github.com/skylerblue333/Py-Trading-Bot.git
-cd Py-Trading-Bot
 pip install -r requirements.txt
-python main.py
+pytest tests/ -v
+uvicorn src.main:app --reload
 ```
 
-## Features
-- Clean, maintainable codebase
-- Proper logging and error handling
-- Zero complex configuration required
+## API
+
+`POST /signal` with `{"prices": [100, 101, 99, ...]}`  
+Returns `{"signal": "BUY"|"SELL"|"HOLD", "rsi": 55.2}`
