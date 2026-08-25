@@ -1,12 +1,33 @@
-name: CI
-on: [push, pull_request]
+name: paper-trader-ci
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
 jobs:
-  test:
-    runs-on: ubuntu-latest
+  verify:
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
-      - run: pip install -r requirements.txt
-      - run: pytest tests/ -v
+          python-version: '3.12'
+      - name: Install dependencies
+        run: python -m pip install --upgrade pip && pip install -r requirements.txt
+      - name: Compile
+        run: python -m compileall -q main.py tests
+      - name: Ruff
+        run: ruff check main.py tests
+      - name: Tests
+        run: pytest -q
+      - name: Dependency audit
+        run: pip-audit -r requirements.txt
+      - name: Build image
+        run: docker build -t sky-paper-trader:${{ github.sha }} .
+      - name: Verify non-root image
+        run: test "$(docker inspect -f '{{.Config.User}}' sky-paper-trader:${{ github.sha }})" = "10001:10001"
+      - name: Smoke demo
+        run: docker run --rm sky-paper-trader:${{ github.sha }} | grep 'paper-only'
