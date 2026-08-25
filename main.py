@@ -1,8 +1,9 @@
 from __future__ import annotations
 
+from collections.abc import Iterable
 from dataclasses import dataclass
 from decimal import Decimal
-from typing import Iterable, Literal
+from typing import Literal
 
 Signal = Literal["BUY", "SELL", "HOLD"]
 
@@ -52,8 +53,8 @@ class PaperTrader:
     def signal(self, prices: list[Decimal]) -> Signal:
         if len(prices) < self.long_window:
             return "HOLD"
-        short_avg = sum(prices[-self.short_window :], Decimal("0")) / self.short_window
-        long_avg = sum(prices[-self.long_window :], Decimal("0")) / self.long_window
+        short_avg = sum(prices[-self.short_window :], Decimal(0)) / self.short_window
+        long_avg = sum(prices[-self.long_window :], Decimal(0)) / self.long_window
         if short_avg > long_avg:
             return "BUY"
         if short_avg < long_avg:
